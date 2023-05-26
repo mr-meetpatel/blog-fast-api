@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-fastapi = {extras = ["all"], version = "*"}
+fastapi = "==0.95.1"
 sqlalchemy = "==2.0.11"
 
 [dev-packages]
