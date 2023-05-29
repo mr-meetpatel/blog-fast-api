@@ -1,8 +1,8 @@
 from fastapi import FastAPI, status, HTTPException, Depends
-from pydantic import BaseModel
+from passlib.context import CryptContext
 from typing import List
 from psycopg2.extras import RealDictCursor
-from . import models, schemas
+from . import models, schemas,utils
 from .database import engine, get_db, session
 import psycopg2
 import time
@@ -15,7 +15,7 @@ app = FastAPI()
 while True:
     try:
         db = psycopg2.connect(
-            host="172.18.0.3",
+            host="172.20.0.2",
             database="blog_db",
             user="root",
             password="root",
@@ -43,7 +43,7 @@ async def get_posts(db: session = Depends(get_db)):
 
 
 @app.get("/posts/{id}", response_model=schemas.PostResponse)
-async def get_posts(id: int, db: session = Depends(get_db)):
+async def get_post_by_id(id: int, db: session = Depends(get_db)):
     # cursor.execute(
     #     """ SELECT * FROM posts WHERE id=%s; """,
     #     (str(id),),
@@ -119,3 +119,30 @@ async def update_post(
     update_query.update(payload.dict(), synchronize_session=False)
     db.commit()
     return update_query.first()
+
+@app.get("/users", response_model=List[schemas.UserResponse])
+async def get_users(db: session = Depends(get_db)):
+    user = db.query(models.User).all()
+    return user
+
+@app.post(
+    "/users", status_code=status.HTTP_201_CREATED, response_model=schemas.UserResponse
+)
+async def create_user(payload: schemas.User, db: session = Depends(get_db)):
+    password = utils.pwd_context.hash(payload.password)
+    payload.password = password
+    user = models.User(**payload.dict())
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+@app.get("/users/{id}", response_model=schemas.UserResponse)
+async def get_user_by_id(id: int, db: session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No Result Found For Given id : {id}",
+        )
+    return user
