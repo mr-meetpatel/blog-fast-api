@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from psycopg2.extras import RealDictCursor
 from . import models
 from .database import engine
-from .routers import user,post
+from .routers import user,post,authentication
 import psycopg2
 import time
 
@@ -13,7 +13,7 @@ app = FastAPI()
 while True:
     try:
         db = psycopg2.connect(
-            host="172.20.0.2",
+            host="172.18.0.3",
             database="blog_db",
             user="root",
             password="root",
@@ -33,3 +33,4 @@ async def home():
 
 app.include_router(user.router)
 app.include_router(post.router)
+app.include_router(authentication.router)
