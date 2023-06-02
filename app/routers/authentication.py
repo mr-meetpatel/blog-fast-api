@@ -6,7 +6,7 @@ from app.database import get_db, session
 router = APIRouter(prefix="/api/v1", tags=["Authentication"])
 
 
-@router.post("/login")
+@router.post("/login",response_model=schemas.JWTToken)
 def login(payload: OAuth2PasswordRequestForm = Depends(), db: session = Depends(get_db)):
     user = (
         db.query(models.User)
