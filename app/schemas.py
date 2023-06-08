@@ -1,6 +1,16 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, validator
 from datetime import datetime
 from typing import Optional
+from fastapi import HTTPException, status
+
+
+def is_valid_dir(value):
+    if value not in [0, 1]:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Invalid value for dir.Only 0 and 1 are allow",
+        )
+    return value
 
 
 class User(BaseModel):
@@ -49,3 +59,9 @@ class JWTToken(BaseModel):
 
 class TokenData(BaseModel):
     id: Optional[str] = None
+
+
+class Vote(BaseModel):
+    post_id: int
+    dir: int
+    _dir = validator("dir", allow_reuse=True)(is_valid_dir)
