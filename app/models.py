@@ -7,7 +7,7 @@ from sqlalchemy.sql.expression import text
 class Post(Base):
     __tablename__ = "posts"
     id = Column(Integer, primary_key=True, nullable=False)
-    user_id = Column(Integer,ForeignKey("users.id",ondelete="CASCADE"),nullable=False)
+    user_id = Column(Integer,ForeignKey("users.id",ondelete="CASCADE"),nullable=Fals)
     title = Column(String, nullable=False)
     content = Column(String, nullable=False)
     is_published = Column(Boolean, server_default="False")
