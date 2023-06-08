@@ -7,13 +7,19 @@ router = APIRouter(prefix="/api/v1", tags=["posts"])
 
 
 @router.get("/posts", response_model=List[schemas.PostResponse])
-async def get_posts(
+async def get_all_posts(
     db: session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)
 ):
     # cursor.execute(""" SELECT * FROM posts; """)
     # posts = cursor.fetchall()
     posts = db.query(models.Post).all()
     return posts
+
+@router.get("/posts/my", response_model=List[schemas.PostResponse])
+async def get_my_posts(
+    db: session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)
+):
+    return db.query(models.Post).filter(models.Post.user_id == current_user.id).all()
 
 
 @router.get("/posts/{id}", response_model=schemas.PostResponse)
