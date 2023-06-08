@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from . import models
 from .database import engine
-from .routers import user,post,authentication
+from .routers import user,post,authentication,vote
 # from psycopg2.extras import RealDictCursor
 # import psycopg2
 # import time
@@ -34,3 +34,4 @@ async def home():
 app.include_router(user.router)
 app.include_router(post.router)
 app.include_router(authentication.router)
+app.include_router(vote.router)
