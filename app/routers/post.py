@@ -1,5 +1,5 @@
 from fastapi import status, HTTPException, Depends, APIRouter
-from typing import List
+from typing import List, Optional
 from app import models, schemas, oauth2
 from app.database import get_db, session
 
@@ -8,9 +8,14 @@ router = APIRouter(prefix="/api/v1", tags=["posts"])
 
 @router.get("/posts", response_model=List[schemas.PostResponse])
 async def get_all_posts(
-    db: session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user),limit: int = 10,offset: int =0
+    db: session = Depends(get_db),
+    current_user: int = Depends(oauth2.get_current_user),
+    limit: int = 10,
+    offset: int = 0,
+    search: Optional[str] = "",
 ):
-    return db.query(models.Post).limit(limit).offset(offset).all()
+    return db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(offset).all()
+
 
 @router.get("/posts/my", response_model=List[schemas.PostResponse])
 async def get_my_posts(
