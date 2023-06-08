@@ -13,7 +13,7 @@ app = FastAPI()
 while True:
     try:
         db = psycopg2.connect(
-            host="172.18.0.3",
+            host="172.18.0.2",
             database="blog_db",
             user="root",
             password="root",
