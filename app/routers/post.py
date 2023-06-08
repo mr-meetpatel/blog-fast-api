@@ -8,12 +8,9 @@ router = APIRouter(prefix="/api/v1", tags=["posts"])
 
 @router.get("/posts", response_model=List[schemas.PostResponse])
 async def get_all_posts(
-    db: session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)
+    db: session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user),limit: int = 10,offset: int =0
 ):
-    # cursor.execute(""" SELECT * FROM posts; """)
-    # posts = cursor.fetchall()
-    posts = db.query(models.Post).all()
-    return posts
+    return db.query(models.Post).limit(limit).offset(offset).all()
 
 @router.get("/posts/my", response_model=List[schemas.PostResponse])
 async def get_my_posts(
