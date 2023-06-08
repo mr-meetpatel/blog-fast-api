@@ -13,6 +13,7 @@ class CreatePost(Post):
 
 class PostResponse(Post):
     id: int
+    user_id: int
     is_published: bool = True
     created_at: datetime
 
