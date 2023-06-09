@@ -1,15 +1,29 @@
 from fastapi import FastAPI
 from . import models
 from .database import engine
-from .routers import user,post,authentication,vote
+from .routers import user, post, authentication, vote
+from .config import settings
+from fastapi.middleware.cors import CORSMiddleware
+
 # from psycopg2.extras import RealDictCursor
 # import psycopg2
 # import time
 
 # Note : No need because now we are using alembic
-#models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine)
 
+print(settings.ORIGINS)
 app = FastAPI()
+
+origins = settings.ORIGINS
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # For Reference
 # while True:
 #     try:
@@ -31,6 +45,7 @@ app = FastAPI()
 @app.get("/")
 async def home():
     return {"message": "Welcome..."}
+
 
 app.include_router(user.router)
 app.include_router(post.router)
