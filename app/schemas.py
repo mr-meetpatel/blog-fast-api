@@ -42,7 +42,7 @@ class PostResponse(Post):
     user: UserResponse
     is_published: bool = True
     created_at: datetime
-
+    votes:int
     class Config:
         orm_mode = True
 

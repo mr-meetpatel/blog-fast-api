@@ -2,11 +2,13 @@ from fastapi import status, HTTPException, Depends, APIRouter
 from typing import List, Optional
 from app import models, schemas, oauth2
 from app.database import get_db, session
+from sqlalchemy import func
+import json
 
 router = APIRouter(prefix="/api/v1", tags=["posts"])
 
 
-@router.get("/posts", response_model=List[schemas.PostResponse])
+@router.get("/posts",response_model=List[schemas.PostResponse])
 async def get_all_posts(
     db: session = Depends(get_db),
     current_user: int = Depends(oauth2.get_current_user),
@@ -14,7 +16,13 @@ async def get_all_posts(
     offset: int = 0,
     search: Optional[str] = "",
 ):
-    return db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(offset).all()
+    results = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(
+        models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(
+        models.Post.title.contains(search)).limit(limit).offset(offset).all()
+    response = [post[0].to_dict() for post in results]
+    for i, vote in enumerate(results):
+        response[i]["votes"] = vote[1]
+    return response
 
 
 @router.get("/posts/my", response_model=List[schemas.PostResponse])
