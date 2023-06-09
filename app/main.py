@@ -6,7 +6,8 @@ from .routers import user,post,authentication,vote
 # import psycopg2
 # import time
 
-models.Base.metadata.create_all(bind=engine)
+# Note : No need because now we are using alembic
+#models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 # For Reference
