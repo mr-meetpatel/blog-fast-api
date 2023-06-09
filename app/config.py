@@ -2,7 +2,7 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    DATABASE: str
+    DRIVER: str
     DATABASE_HOSTNAME: str
     DATABASE_PORT: str
     DATABASE_USERNAME: str
